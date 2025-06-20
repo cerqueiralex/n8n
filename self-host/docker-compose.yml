@@ -1,0 +1,27 @@
+version: "3.8"  # Define a versão do Docker Compose. A 3.8 é compatível com versões mais recentes do Docker
+
+services:  # Início da definição dos serviços (containers) que serão criados
+  n8n:  # Nome do serviço — você pode referenciar este nome em redes internas Docker
+    image: n8nio/n8n  # Imagem oficial do n8n (workflow automation tool) hospedada no Docker Hub
+    container_name: n8n  # Nome personalizado do container (facilita identificação e gerenciamento)
+
+    ports:  # Mapeia as portas do container para o host
+      - "5678:5678"  # Porta padrão do n8n — acessível via http://localhost:5678 no navegador
+
+    environment:  # Variáveis de ambiente usadas para configurar o comportamento do n8n
+      - N8N_BASIC_AUTH_ACTIVE=true  # Ativa autenticação básica via usuário e senha
+      - N8N_BASIC_AUTH_USER=admin  # Define o nome de usuário para login no n8n
+      - N8N_BASIC_AUTH_PASSWORD=admin123  # Define a senha para login (não recomendado deixar isso em produção)
+      - N8N_HOST=localhost  # Define o host onde o n8n será exposto (no caso, localmente)
+      - N8N_PORT=5678  # Porta em que o n8n escutará dentro do container
+      - N8N_PROTOCOL=http  # Protocolo usado (pode ser alterado para https em produção)
+      - NODE_ENV=production  # Define o ambiente de execução como produção
+      - TZ=America/Sao_Paulo  # Define o timezone do container para São Paulo (corrige horários internos)
+
+    volumes:  # Volumes para persistência de dados (para que os fluxos criados não sejam perdidos ao reiniciar o container)
+      - n8n_data:/home/node/.n8n  # Monta o volume nomeado 'n8n_data' na pasta onde o n8n salva seus dados internos
+
+    restart: always  # Garante que o container será reiniciado automaticamente em caso de falha ou reboot do sistema
+
+volumes:  # Definição de volumes nomeados
+  n8n_data:  # Volume persistente usado para armazenar os dados da aplicação n8n (como fluxos, credenciais, etc.)
